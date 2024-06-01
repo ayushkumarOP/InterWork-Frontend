@@ -1,4 +1,23 @@
-import { Button } from '@mui/material'
+// import { Button } from '@mui/material'
+import DeleteIcon from '@mui/icons-material/Delete';
+import styled from 'styled-components'
+
+const IconContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+`;
+
+const Button = styled(DeleteIcon)`
+  cursor: pointer;
+  color: red;
+
+  &:hover {
+    color: darkred;
+  }
+`;
+
 const DeleteUserRenderer = (params) => {
     const userId = params.data._id;
 
@@ -23,6 +42,6 @@ const DeleteUserRenderer = (params) => {
     }
     };
 
-    return <Button onClick={handleDeleteUser}>Delete User</Button>;
+    return <IconContainer><Button onClick={handleDeleteUser}>Delete User</Button></IconContainer>;
 };
 export default DeleteUserRenderer;

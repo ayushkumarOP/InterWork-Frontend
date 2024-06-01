@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import UploadIcon from '@mui/icons-material/Upload';
@@ -32,6 +32,21 @@ const InputField = styled.input`
   border-radius: 4px;
   margin-bottom: 20px;
   width: 300px;
+`;
+
+const SelectField = styled.select`
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  width: 300px;
+`;
+
+const SelectWrapper = styled.div`
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
 `;
 
 const ImageUpload = styled.div`
@@ -94,11 +109,40 @@ const AddVariantButton = styled(Button)`
   color: #fff;
 `;
 
-const ManageProduct = () => {
+const CategoryForm = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [image, setImage] = useState(null);
   const [variants, setVariants] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedSubcategory, setSelectedSubcategory] = useState('');
+
+  useEffect(() => {
+    // Fetch categories from the server
+    axios.get('http://localhost:5005/apii/categories')
+      .then(response =>
+         setCategories(response.data)
+        )
+      .catch(error => console.error(error));
+  }, []);
+
+  const handleCategoryChange = (e) => {
+    const category = e.target.value;
+    setSelectedCategory(category);
+
+    // Fetch subcategories based on the selected category
+    axios.get(`http://localhost:5005/apii/subcategories?category=${category}`)
+      .then(response => setSubcategories(response.data))
+      .catch(error => console.error(error));
+
+    setSelectedSubcategory('');
+  };
+
+  const handleSubcategoryChange = (e) => {
+    setSelectedSubcategory(e.target.value);
+  };
 
   const handleAddVariant = () => {
     setVariants([...variants, { type: '', options: '' }]);
@@ -121,6 +165,8 @@ const ManageProduct = () => {
     formData.append('name', name);
     formData.append('description', description);
     formData.append('variants', JSON.stringify(variants));
+    formData.append('category', selectedCategory);
+    formData.append('subcategory', selectedSubcategory);
     formData.append('myfile', image);
 
     try {
@@ -130,8 +176,13 @@ const ManageProduct = () => {
         },
       });
 
-      if(response.status === 200){
-        setName(''); setDescription(''); setImage(null); setVariants([]);
+      if (response.status === 200) {
+        setName('');
+        setDescription('');
+        setImage(null);
+        setVariants([]);
+        setSelectedCategory('');
+        setSelectedSubcategory('');
         alert("Product added successfully");
       }
 
@@ -145,6 +196,8 @@ const ManageProduct = () => {
     setDescription('');
     setImage(null);
     setVariants([]);
+    setSelectedCategory('');
+    setSelectedSubcategory('');
   };
 
   const handleFileChange = (e) => {
@@ -162,6 +215,21 @@ const ManageProduct = () => {
           onChange={(e) => setName(e.target.value)}
           required
         />
+        <Title>Category Selection</Title>
+        <SelectWrapper>
+              <SelectField value={selectedCategory} onChange={handleCategoryChange} required>
+              <option value="" disabled>Select category</option>
+              {categories.map((category, index) => (
+                <option key={index} value={category}>{category}</option>
+              ))}
+            </SelectField>
+          <SelectField value={selectedSubcategory} onChange={handleSubcategoryChange} required>
+            <option value="" disabled>Select subcategory</option>
+            {subcategories.map((subcategory, index) => (
+              <option key={index} value={subcategory}>{subcategory}</option>
+            ))}
+          </SelectField>
+        </SelectWrapper>
         <Title>Product Description</Title>
         <Editor
           apiKey="cihhcazgrqyhznr0a50t28r0l0j6dc8z6z683qpyu1dzmzb9" // You can get an API key from the TinyMCE website
@@ -175,7 +243,6 @@ const ManageProduct = () => {
               'insertdatetime media table paste code help wordcount'
             ],
           }}
-
           onEditorChange={(content) => setDescription(content)}
         />
         <Title>Product Image</Title>
@@ -221,4 +288,5 @@ const ManageProduct = () => {
   );
 };
 
-export default ManageProduct;
+export default CategoryForm;
+

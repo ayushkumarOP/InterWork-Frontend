@@ -1,5 +1,5 @@
-import React,{useState} from 'react'
-import styled from 'styled-components'
+import React, { useState } from 'react';
+import styled from 'styled-components';
 import { AgGridReact } from 'ag-grid-react'; // React Data Grid Component
 import "ag-grid-community/styles/ag-grid.css"; // Mandatory CSS required by the grid
 import "ag-grid-community/styles/ag-theme-material.css"; // Optional Theme applied to the grid
@@ -42,6 +42,12 @@ const StatusSelect = styled.select`
   padding: 2px;
 `;
 
+const CenteredHeader = styled.div`
+  .ag-header-cell-label {
+    justify-content: center;
+  }
+`;
+
 const StatusCellRenderer = (params) => {
   const selectedValue = params.value || 'Pending';
   const handleChange = (event) => {
@@ -59,77 +65,86 @@ const StatusCellRenderer = (params) => {
   );
 };
 
+const CombinedActionsCellRenderer = (params) => {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: 10 }}>
+      <StatusUserRenderer {...params} />
+      <DeleteUserRenderer {...params} />
+    </div>
+  );
+};
+
 const Table = () => {
-    const [rowData, setRowData] = useState([]);
-    const [formData,setFormData] = useState({username:"",email:""});
+  const [rowData, setRowData] = useState([]);
+  const [formData, setFormData] = useState({ username: "", email: "" });
 
-    const [colDefs, setColDefs] = useState([
-        { headerName:"Username" ,field: "username" },
-        { headerName:"Email" ,field: "email" },
-        { headerName:"Name" ,field: "name", editable: true },
-        { headerName:"Last Name" ,field: "lastname", editable: true },
-        {
-            headerName: 'Status',
-            field: 'status',
-            cellEditor: 'agSelectCellEditor',
-            cellEditorParams: {
-                values: statusOptions,
-            },
-            cellRenderer: StatusCellRenderer,
-        },
-        {
-            headerName: 'Update Status',
-            cellRenderer: UpdateStatusCellRenderer,
-        },
-        {
-            headerName: 'Update User',  
-            cellRenderer: StatusUserRenderer,
-        },
-        {
-            headerName: 'Delete User',
-            cellRenderer: DeleteUserRenderer,
-        }
-    ]);
-
-    const onChange=(e)=>{
-        const {value,id}= e.target
-        console.log(value,id);
-        setFormData({...formData,[id]:value})
+  const [colDefs, setColDefs] = useState([
+    { headerName: "Username", field: "username", flex: 2 },
+    { headerName: "Email", field: "email", flex: 2 },
+    { headerName: "Name", field: "name", editable: true, flex: 2 },
+    { headerName: "Last Name", field: "lastname", editable: true, flex: 2 },
+    {
+      headerName: 'Status',
+      field: 'status',
+      cellEditor: 'agSelectCellEditor', flex: 2,
+      cellEditorParams: {
+        values: statusOptions,
+      },
+      cellRenderer: StatusCellRenderer,
+    },
+    {
+      headerName: 'Update Status',
+      flex: 2,
+      cellRenderer: UpdateStatusCellRenderer,
+    },
+    {
+      headerName: 'Actions',
+      flex: 2,
+      cellRenderer: CombinedActionsCellRenderer,
     }
+  ]);
 
-    const onGridReady=(params)=>{
-        console.log("grid is ready");
-        fetch("http://localhost:5005/api/users/alldata")
-        .then(resp=>resp.json())
-        .then(resp=>{
-            console.log(resp)
-            params.api.applyTransaction({add:resp})
-        }
-        )
-    }
-    const defaultColDef = {
-        sortable :true,
-        flex:1, 
-        filter:true,
-        floatingFilter:true
-      }
+  const onChange = (e) => {
+    const { value, id } = e.target;
+    console.log(value, id);
+    setFormData({ ...formData, [id]: value });
+  }
+
+  const onGridReady = (params) => {
+    console.log("grid is ready");
+    fetch("http://localhost:5005/api/users/alldata")
+      .then(resp => resp.json())
+      .then(resp => {
+        console.log(resp);
+        params.api.applyTransaction({ add: resp });
+      });
+  }
+
+  const defaultColDef = {
+    sortable: true,
+    flex: 2,
+    filter: true,
+    floatingFilter: true
+  }
+
   return (
     <Container>
-      <div className="ag-theme-material" style={{ height: 570 }} >
-        
-      <AgGridReact 
-        rowData={rowData} 
-        columnDefs={colDefs} 
-        defaultColDef={defaultColDef}
-        onGridReady={onGridReady}
-        pagination={true}
-        paginationPageSize={10}
-        paginationAutoPageSize={true}
-      />
-    </div>
+      <CenteredHeader>
+        <div className="ag-theme-material" style={{ height: 570 }}>
+          <AgGridReact
+            rowData={rowData}
+            columnDefs={colDefs}
+            defaultColDef={defaultColDef}
+            onGridReady={onGridReady}
+            pagination={true}
+            paginationPageSize={10}
+            paginationAutoPageSize={true}
+          />
+        </div>
+      </CenteredHeader>
     </Container>
-    
-  )
+  );
 }
 
-export default Table
+export default Table;
+

@@ -1,5 +1,4 @@
 import React from 'react'
-// import Table from '../components/Table'
 import Sidebar from '../components/Sidebar'
 import NavbarAdmin from '../components/Navbar_admin'
 import ManageProduct from '../components/Products/ManageProduct'
