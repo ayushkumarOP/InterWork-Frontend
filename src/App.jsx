@@ -5,6 +5,7 @@ import {BrowserRouter as Router,Routes,Route, Navigate} from "react-router-dom";
 import Products from "./pages/Products";
 import Brands from "./pages/Brands";
 import Categories from "./pages/Categories";
+import CategoryFilter from "./pages/CategoryFilter";
 // import Experiment from "./pages/Experminent";
 
 const App=()=>{
@@ -18,6 +19,7 @@ const App=()=>{
         <Route path="/product" element={user?<Navigate to="/"/>:<Products/>}/>
         <Route path="/brand" element={user?<Navigate to="/"/>:<Brands/>}/>
         <Route path="/categories" element={user?<Navigate to="/"/>:<Categories/>}/>
+        <Route path="/user/category" element={user?<Navigate to="/"/>:<CategoryFilter/>}/>
         {/* <Route path="/experiments" element={user?<Navigate to="/"/>:<Experiment/>}/> */}
       </Routes>
     </Router>
