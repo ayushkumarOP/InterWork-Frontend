@@ -6,6 +6,8 @@ import Products from "./pages/Products";
 import Brands from "./pages/Brands";
 import Categories from "./pages/Categories";
 import CategoryFilter from "./pages/CategoryFilter";
+import Product from "./pages/ProductPage"
+import Cart from './pages/Cart'
 // import Experiment from "./pages/Experminent";
 
 const App=()=>{
@@ -20,7 +22,8 @@ const App=()=>{
         <Route path="/brand" element={user?<Navigate to="/"/>:<Brands/>}/>
         <Route path="/categories" element={user?<Navigate to="/"/>:<Categories/>}/>
         <Route path="/user/category" element={user?<Navigate to="/"/>:<CategoryFilter/>}/>
-        {/* <Route path="/experiments" element={user?<Navigate to="/"/>:<Experiment/>}/> */}
+        <Route path="/cart" element={user?<Navigate to="/"/>:<Cart/>}/>
+        <Route path="/product/:id" element={<Product/>}/>    
       </Routes>
     </Router>
   );

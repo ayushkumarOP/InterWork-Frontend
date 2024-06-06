@@ -232,7 +232,7 @@ const CategoryForm = () => {
         </SelectWrapper>
         <Title>Product Description</Title>
         <Editor
-          apiKey="cihhcazgrqyhznr0a50t28r0l0j6dc8z6z683qpyu1dzmzb9" // You can get an API key from the TinyMCE website
+          apiKey="cihhcazgrqyhznr0a50t28r0l0j6dc8z6z683qpyu1dzmzb9" 
           value={description}
           init={{
             height: 300,

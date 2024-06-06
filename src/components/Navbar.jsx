@@ -2,7 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import { mobile } from "../responsive";
 import { Link } from "react-router-dom";
-
+import { Badge } from "@mui/material";
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 const Container = styled.div`
   margin: 0 0 100px 0;
   height: 0px;
@@ -88,10 +89,17 @@ const Navbar = () => {
         </Center>
 
         <Right>
-          <Link to="/cart">
-              <Button $primary>B2B Login</Button>
+            <Button $primary>B2B Login</Button>
+            <Link to="/cart">
+            <MenuItem>
+              <Badge badgeContent={1} color="primary">
+                <ShoppingCartOutlinedIcon />
+              </Badge>
+            </MenuItem>
           </Link>
         </Right>
+
+        
        
       </Wrapper>
       <Divider/>
