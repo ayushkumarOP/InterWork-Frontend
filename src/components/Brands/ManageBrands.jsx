@@ -87,7 +87,7 @@ const ManageBrands = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append('name', name);
+    formData.append('name', encodeURIComponent(name));
     formData.append('myfile', image);
 
     try {
@@ -100,6 +100,7 @@ const ManageBrands = () => {
       if(response.status===200){
         setName(''); setImage(null);
         alert("Brand is added");
+        document.getElementById('file-upload').value = '';
       }
 
     } catch (error) {
@@ -110,6 +111,7 @@ const ManageBrands = () => {
   const handleReset = () => {
     setName('');
     setImage(null);
+    document.getElementById('file-upload').value = '';
   };
 
   const handleFileChange = (e) => {

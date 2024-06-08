@@ -117,9 +117,14 @@ const ManageCategory = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append('categoryName', categoryName);
-    formData.append('myfile', categoryImage);
-    formData.append('subcategories', JSON.stringify(subcategories));
+    formData.append('categoryName', encodeURIComponent(categoryName));
+    formData.append('categoryImage', categoryImage);
+    
+    // Convert subcategories to an array of strings
+    const subcategoryNames = subcategories.map(subcategory => encodeURIComponent(subcategory.name));
+    formData.append('subcategories', JSON.stringify(subcategoryNames));
+
+    console.log('Form Data:', formData); // Debugging: Check form data
 
     try {
       const response = await axios.post('http://localhost:5005/apii/addCategory', formData, {
@@ -132,6 +137,7 @@ const ManageCategory = () => {
         setCategoryName('');
         setCategoryImage(null);
         setSubcategories([{ name: '' }]);
+        document.getElementById('file-upload').value = ''; 
         alert("Category added successfully");
       }
     } catch (error) {
@@ -143,6 +149,7 @@ const ManageCategory = () => {
     setCategoryName('');
     setCategoryImage(null);
     setSubcategories([{ name: '' }]);
+    document.getElementById('file-upload').value = ''; 
   };
 
   const handleFileChange = (e) => {
@@ -197,4 +204,3 @@ const ManageCategory = () => {
 };
 
 export default ManageCategory;
-

@@ -118,6 +118,7 @@ const CategoryForm = () => {
   const [subcategories, setSubcategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedSubcategory, setSelectedSubcategory] = useState('');
+  const [price, setPrice] = useState('');
 
   useEffect(() => {
     // Fetch categories from the server
@@ -133,7 +134,7 @@ const CategoryForm = () => {
     setSelectedCategory(category);
 
     // Fetch subcategories based on the selected category
-    axios.get(`http://localhost:5005/apii/subcategories?category=${category}`)
+    axios.get(`http://localhost:5005/apii/subcategories?category=${encodeURIComponent(category)}`)
       .then(response => setSubcategories(response.data))
       .catch(error => console.error(error));
 
@@ -148,6 +149,10 @@ const CategoryForm = () => {
     setVariants([...variants, { type: '', options: '' }]);
   };
 
+  const handlePriceChange = (e) => {
+    setPrice(e.target.value);
+  };
+
   const handleVariantChange = (index, field, value) => {
     const newVariants = [...variants];
     newVariants[index][field] = value;
@@ -159,15 +164,21 @@ const CategoryForm = () => {
     setVariants(newVariants);
   };
 
+  const handleFileChange = (e) => {
+    setImage(e.target.files[0]);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append('name', name);
+    formData.append('name', encodeURIComponent(name));
     formData.append('description', description);
     formData.append('variants', JSON.stringify(variants));
     formData.append('category', selectedCategory);
     formData.append('subcategory', selectedSubcategory);
+    formData.append('price', price);
     formData.append('myfile', image);
+    
 
     try {
       const response = await axios.post('http://localhost:5005/apu/addProduct', formData, {
@@ -183,7 +194,9 @@ const CategoryForm = () => {
         setVariants([]);
         setSelectedCategory('');
         setSelectedSubcategory('');
+        setPrice('');
         alert("Product added successfully");
+        document.getElementById('file-upload').value = ''; 
       }
 
     } catch (error) {
@@ -198,11 +211,12 @@ const CategoryForm = () => {
     setVariants([]);
     setSelectedCategory('');
     setSelectedSubcategory('');
+    setPrice('');
+    document.getElementById('file-upload').value = ''; 
+
   };
 
-  const handleFileChange = (e) => {
-    setImage(e.target.files[0]);
-  };
+  
 
   return (
     <Wrapper>
@@ -215,18 +229,26 @@ const CategoryForm = () => {
           onChange={(e) => setName(e.target.value)}
           required
         />
+        <Title>Price</Title>
+        <InputField
+          type="text"
+          placeholder="Enter price"
+          value={price}
+          onChange={handlePriceChange}
+          required
+        />
         <Title>Category Selection</Title>
         <SelectWrapper>
               <SelectField value={selectedCategory} onChange={handleCategoryChange} required>
               <option value="" disabled>Select category</option>
               {categories.map((category, index) => (
-                <option key={index} value={category}>{category}</option>
+                <option key={index} value={category}>{decodeURIComponent(category)}</option>
               ))}
             </SelectField>
           <SelectField value={selectedSubcategory} onChange={handleSubcategoryChange} required>
             <option value="" disabled>Select subcategory</option>
             {subcategories.map((subcategory, index) => (
-              <option key={index} value={subcategory}>{subcategory}</option>
+              <option key={index} value={subcategory}>{decodeURIComponent(subcategory)}</option>
             ))}
           </SelectField>
         </SelectWrapper>

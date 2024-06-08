@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import { useSelector } from "react-redux";
 
 const Container = styled.div`
   display: flex;
@@ -114,114 +115,136 @@ const Buttonq = styled.button`
 `;
 
 const Combined = () => {
-    const [countries, setCountries] = useState([]);
-
-    useEffect(() => {
-        axios.get('https://restcountries.com/v3.1/all')
-        .then(response => {
-            const countryNames = response.data.map(country => country.name.common);
-            setCountries(countryNames.sort());
-        })
-        .catch(error => {
-            console.error('Error fetching countries:', error);
-        });
-    }, []);
-
-    
-    const [data, setData] = useState([
-      {
-        image: 'https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg?cs=srgb&dl=pexels-madebymath-90946.jpg&fm=jpg',
-        description: 'A01-0321 Push Pull Switch (On Off) 1 × ₹0',
-        total: '₹ 100',
-      },
-    ]);
+  const [countries, setCountries] = useState([]);
+  const [subtotal, setSubtotal] = useState(0);
+  const [total, setTotal] = useState(0);
+  const itemPrice = 40;
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [country, setCountry] = useState('');
+  const [address, setAddress] = useState('');
+  const cart = useSelector(state => state.cart);
+  console.log(cart);
   
-    const [subtotal, setSubtotal] = useState(0);
-    const [total, setTotal] = useState(0);
-  
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const response = await axios.get('https://api.example.com/orders');
-          setData(response.data);
-          calculateTotals(response.data);
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
+
+  useEffect(() => {
+    axios.get('https://restcountries.com/v3.1/all')
+      .then(response => {
+        const countryNames = response.data.map(country => country.name.common);
+        setCountries(countryNames.sort());
+      })
+      .catch(error => {
+        console.error('Error fetching countries:', error);
+      });
+  }, []);
+
+  useEffect(() => {
+    calculateTotals(cart.products);
+  }, [cart]);
+
+  const calculateTotals = (data) => {
+    const subtotal = data.length * itemPrice;
+    const finalTotal = subtotal * 1.05;
+
+    setSubtotal(subtotal.toFixed(2));
+    setTotal(finalTotal.toFixed(2));
+  };
+  const handleQuotationRequest = async () => {
+    try {
+      const formData = {
+        products: cart.products.map(product => ({
+          productId: product._id || product.productId,
+          quantity: product.quantity,
+        })),
+        total,
+        billingDetails: {fullName, email, phone, country, address},
       };
-  
-      fetchData();
-    }, []);
-  
-    const calculateTotals = (data) => {
-      const subtotal = data.reduce((sum, item) => {
-        const itemPrice = parseFloat(item.total.replace('₹ ', ''));
-        return sum + itemPrice;
-      }, 0);
-  
-      const finalTotal = subtotal * 1.05;
-  
-      setSubtotal(subtotal.toFixed(2));
-      setTotal(finalTotal.toFixed(2));
-    };
-  
-    return (
-        <Container>
-            <FormContainer>
-                <Form>
-                    <Heading>Billing Details</Heading>
-                    <Label>Full Name</Label>
-                    <Input type="text" name="name" />
-                    
-                    <Label>Email Address</Label>
-                    <Input type="email" name="email" />
-                    
-                    <Label>Phone</Label>
-                    <Input type="text" name="phone" />
-                    
-                    <Label>Country</Label>
-                    <Select name="country">
-                        <option value="">Select Country</option>
-                        {countries.map((country, index) => (
-                        <option key={index} value={country}>{country}</option>
-                        ))}
-                    </Select>
-                    
-                    <Label>Street Address</Label>
-                    <Input type="text" name="address" />
-                </Form>
-            </FormContainer>
-        <SummaryContainer>
+      const response = await axios.post('http://localhost:5005/api/quotation/quotation-request', formData);
+      console.log('Quotation request submitted successfully:', response.data);
+      alert("Quotation Request is send")
+    } catch (err) {
+      console.error('Failed to submit quotation request:', err);
+    }
+  };
+  const handlePlaceOrder = async () => {
+    try {
+      const formData = {
+        products: cart.products.map(product => ({
+          productId: product._id,
+          quantity: product.quantity,
+        })),
+        total,
+      };
+      
+      const response = await axios.post('http://localhost:5005/api/orders/place-order', formData);
+      console.log('Order placed successfully:', response.data);
+      alert("Order is placed");
+    } catch (err) {
+      console.error('Failed to place order:', err);
+    }
+  };
+  return (
+    <Container>
+      <FormContainer>
+        <Form>
+          <Heading>Billing Details</Heading>
+          <Label>Full Name</Label>
+          <Input type="text" name="name" value={fullName} onChange={(e) => setFullName(e.target.value)} />
+
+          <Label>Email Address</Label>
+          <Input type="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+
+          <Label>Phone</Label>
+          <Input type="text" name="phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
+
+          <Label>Country</Label>
+          <Select name="country" value={country} onChange={(e) => setCountry(e.target.value)}>
+            <option value="">Select Country</option>
+            {countries.map((country, index) => (
+              <option key={index} value={country}>{country}</option>
+            ))}
+          </Select>
+
+          <Label>Street Address</Label>
+          <Input type="text" name="address" value={address} onChange={(e) => setAddress(e.target.value)} />
+        </Form>
+      </FormContainer>
+      <SummaryContainer>
         <Summary>
-            <Title>YOUR ORDER</Title>
-            <Table>
+          <Title>YOUR ORDER</Title>
+          <Table>
             <thead>
-                <tr>
+              <tr>
                 <TableHeader>IMAGE</TableHeader>
                 <TableHeader>DESCRIPTION</TableHeader>
                 <TableHeader>TOTAL</TableHeader>
-                </tr>
+              </tr>
             </thead>
             <tbody>
-                {data.map((item, index) => (
+              {cart.products.map((item, index) => (
                 <TableRow key={index}>
-                    <ImageCell>
+                  <ImageCell>
                     <Image src={item.image} alt="Product" />
-                    </ImageCell>
-                    <TableCell>{item.description}</TableCell>
-                    <TableCell>{item.total}</TableCell>
+                  </ImageCell>
+                  <TableCell>
+                    {item.name}
+                  </TableCell>
+                  <TableCell>
+                    ₹ {itemPrice.toFixed(2)}
+                  </TableCell>
                 </TableRow>
-                ))}
+              ))}
             </tbody>
-            </Table>
-            <p>Subtotal: ₹ {subtotal}</p>
-            <p>TOTAL: ₹ {total}</p>
-            <Buttonq>QUOTATION REQUEST &gt;&gt;</Buttonq>
-            <Button>PLACE ORDER &gt;&gt;</Button>
+          </Table>
+          <p>Subtotal: ₹ {subtotal}</p>
+          <p>TOTAL: ₹ {total}</p>
+          <Buttonq onClick={handleQuotationRequest}>QUOTATION REQUEST &gt;&gt;</Buttonq>
+          <Button onClick={handlePlaceOrder}>PLACE ORDER &gt;&gt;</Button>
         </Summary>
       </SummaryContainer>
-      </Container>
-    );
-  };
-  
+    </Container>
+  );
+};
+
 export default Combined;
