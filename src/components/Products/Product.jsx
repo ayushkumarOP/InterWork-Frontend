@@ -4,6 +4,8 @@ import axios from "axios";
 import { useLocation } from "react-router-dom";
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import {useDispatch} from 'react-redux';
+import { addProduct } from "../../redux/cartRedux";
 
 const Container = styled.div``;
 
@@ -121,19 +123,19 @@ const QuantityButton = styled.button`
   }
 `;
 
-const Product = () => {
+const ProductE = () => {
   const [product, setProduct] = useState({});
   const [selectedVariants, setSelectedVariants] = useState({});
   const [quantity, setQuantity] = useState(1);
   const location = useLocation();
   const id = location.pathname.split("/")[2];
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const getProduct = async () => {
       try {
         const res = await axios.get("http://localhost:5005/apu/find/"+ id);
         setProduct(res.data);
-        console.log(res.data);
       } catch (err) {
         console.error(err);
       }
@@ -150,33 +152,37 @@ const Product = () => {
   };
 
   const handleAddToCart = () => {
-    console.log({
-      product,
-      quantity,
-      selectedVariants,
-    });
+    dispatch(
+      addProduct({...product ,quantity,selectedVariants})
+    );
   };
 
   const createMarkup = (html) => ({ __html: html });
 
   const handleVariantChange = (type, value) => {
-    setSelectedVariants((prev) => ({ ...prev, [type]: value }));
+    if (!value) {
+      // If value is empty, select the first option from the comma-separated list
+      const firstOption = product.variants.find(variant => variant.type === type)?.options[0]?.split(',')[0];
+      setSelectedVariants((prev) => ({ ...prev, [type]: firstOption }));
+    } else {
+      setSelectedVariants((prev) => ({ ...prev, [type]: value }));
+    }
   };
 
   return (
     <Container>
       <SideNav>
-        Home&nbsp;&nbsp;{'>'}&nbsp;&nbsp;Category&nbsp;&nbsp;{'>'}&nbsp;&nbsp;{product.category}&nbsp;&nbsp;{'>'}&nbsp;&nbsp;<span style={{ color: 'rgb(102, 102, 102)' }}>{product.name}</span>
+        Home&nbsp;&nbsp;{'>'}&nbsp;&nbsp;Category&nbsp;&nbsp;{'>'}&nbsp;&nbsp;{decodeURIComponent(product.category)}&nbsp;&nbsp;{'>'}&nbsp;&nbsp;<span style={{ color: 'rgb(102, 102, 102)' }}>{decodeURIComponent(product.name)}</span>
       </SideNav>
       <Wrapper>
         <ImgContainer>
           <Image src={product.image} alt={product.name} />
         </ImgContainer>
         <InfoContainer>
-          <Title>SKU: {product.category}</Title>
-          <Title>{product.name}</Title>
+          <Title>SKU: {decodeURIComponent(product.category)}</Title>
+          <Title>{decodeURIComponent(product.name)}</Title>
           <Desc dangerouslySetInnerHTML={createMarkup(product.description)} />
-          <Price>₹ 40{/*{product.price}*/}</Price>
+          <Price>₹ {product.price}</Price>
           <FilterContainer>
             {product.variants?.map((variant) => (
               <Filter key={variant.type}>
@@ -209,5 +215,5 @@ const Product = () => {
   );
 };
 
-export default Product;
+export default ProductE;
 

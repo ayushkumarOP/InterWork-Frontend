@@ -5,12 +5,13 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { FavoriteBorderOutlined, SearchOutlined, ShoppingCartOutlined } from "@mui/icons-material";
 import { Link } from "react-router-dom";
+import {useDispatch} from 'react-redux';
+import {addProduct } from "../../redux/cartRedux";
 
 const Wrapper = styled.div`
   display: flex;
   padding: 20px;
   margin-top: 120px;
-  /* margin-left: 235px; */
 `;
 
 const Container = styled.div`
@@ -91,12 +92,34 @@ const Icon = styled.div`
 `;
 
 const Product = ({ item }) => {
+  const dispatch = useDispatch();
+
+  const handleAddToCart = () => {
+    const selectedVariants = item.variants.map(variant => variant.options[0].split(',')[0]);
+    const productToAdd = {
+      _id: item._id,
+      name: item.name,
+      image: item.image,
+      description: item.description,
+      category: item.category,
+      subcategory: item.subcategory,
+      price: item.price, 
+      quantity: 1,
+      selectedVariants
+    };
+    dispatch(addProduct(productToAdd));
+    console.log(productToAdd);
+ 
+  };
+  
+
+
   return (
     <ProductContainer>
       <Circle />
       <Image src={item.image} alt={item.name} />
       <Info>
-        <Icon>
+        <Icon onClick={handleAddToCart}>
           <ShoppingCartOutlined />
         </Icon>
         <Icon>
@@ -126,12 +149,13 @@ const Categorybar = () => {
 
   useEffect(() => {
     if (selectedCategories.length > 0) {
+      const encodedCategories = selectedCategories.map(encodeURIComponent);
       axios
-        .get(`http://localhost:5005/apu/productsByCategory?categories=${selectedCategories.join(',')}`)
+        .get(`http://localhost:5005/apu/productsByCategory?categories=${encodedCategories.join(',')}`)
         .then((response) => setProducts(response.data))
         .catch((error) => console.error(error));
     } else {
-      setProducts([]); // Clear products when no categories are selected
+      setProducts([]); 
     }
   }, [selectedCategories]);
 
@@ -142,7 +166,7 @@ const Categorybar = () => {
           multiple
           id="fixed-tags-demo"
           options={categories}
-          getOptionLabel={(option) => option}
+          getOptionLabel={(option) => decodeURIComponent(option)}
           value={selectedCategories}
           onChange={(event, newValue) => {
             setSelectedCategories(newValue);

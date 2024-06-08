@@ -17,7 +17,7 @@ const FormContainer = styled.div`
 
 const SummaryContainer = styled.div`
   flex: 1;
-  max-width: 400px; 
+  max-width: 520px; 
 `;
 
 const Form = styled.form`
@@ -118,7 +118,6 @@ const Combined = () => {
   const [countries, setCountries] = useState([]);
   const [subtotal, setSubtotal] = useState(0);
   const [total, setTotal] = useState(0);
-  const itemPrice = 40;
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -144,12 +143,13 @@ const Combined = () => {
   }, [cart]);
 
   const calculateTotals = (data) => {
-    const subtotal = data.length * itemPrice;
+    const subtotal = data.reduce((acc, item) => acc + (item.price * item.quantity), 0);
     const finalTotal = subtotal * 1.05;
 
     setSubtotal(subtotal.toFixed(2));
     setTotal(finalTotal.toFixed(2));
   };
+
   const handleQuotationRequest = async () => {
     try {
       const formData = {
@@ -167,6 +167,7 @@ const Combined = () => {
       console.error('Failed to submit quotation request:', err);
     }
   };
+
   const handlePlaceOrder = async () => {
     try {
       const formData = {
@@ -184,6 +185,7 @@ const Combined = () => {
       console.error('Failed to place order:', err);
     }
   };
+
   return (
     <Container>
       <FormContainer>
@@ -218,6 +220,7 @@ const Combined = () => {
               <tr>
                 <TableHeader>IMAGE</TableHeader>
                 <TableHeader>DESCRIPTION</TableHeader>
+                <TableHeader>QUANTITY</TableHeader>
                 <TableHeader>TOTAL</TableHeader>
               </tr>
             </thead>
@@ -228,10 +231,13 @@ const Combined = () => {
                     <Image src={item.image} alt="Product" />
                   </ImageCell>
                   <TableCell>
-                    {item.name}
+                    {decodeURIComponent(item.name)}
                   </TableCell>
                   <TableCell>
-                    ₹ {itemPrice.toFixed(2)}
+                    {item.quantity}
+                  </TableCell>
+                  <TableCell>
+                    ₹ {(item.price * item.quantity).toFixed(2)}
                   </TableCell>
                 </TableRow>
               ))}
