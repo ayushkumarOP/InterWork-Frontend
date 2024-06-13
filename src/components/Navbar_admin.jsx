@@ -8,9 +8,11 @@ import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
 
 const Container = styled.div`
-  margin: 0 0 100px 0;
-  height: 0px;
-  ${mobile({ height: "50px" })}
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 9999;
+  ${mobile({ height: "50px" })};
 `;
 const Wrapper = styled.div`
   padding: 0px 20px;

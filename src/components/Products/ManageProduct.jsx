@@ -232,7 +232,7 @@ const CategoryForm = () => {
         <Title>Price</Title>
         <InputField
           type="text"
-          placeholder="Enter price"
+          placeholder="Enter price (in ₹ Rupees)"
           value={price}
           onChange={handlePriceChange}
           required

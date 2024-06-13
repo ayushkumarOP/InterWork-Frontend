@@ -1,17 +1,22 @@
 import Product from "../components/Products/Product"
-import EndCredit from "../components/EndCredit"
 import Footer from "../components/Footer"
 import Navbar from "../components/Navbar"
+import styled from "styled-components"
+
+const Container = styled.div`
+  display: flex;
+  min-height: 98.5vh;
+  flex-direction: column;
+  padding-top:70px;
+`
 
 const ProductPage = () => {
-  
   return (
-    <div>
+    <Container>
       <Navbar/>
       <Product/>
       <Footer/>
-      <EndCredit/>
-    </div>
+    </Container>
   )
 }
 

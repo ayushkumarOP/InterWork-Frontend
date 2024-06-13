@@ -1,9 +1,10 @@
 import {Facebook,Instagram,Pinterest,Twitter} from "@mui/icons-material";
 import styled from "styled-components";
 import { mobile } from "../responsive";
+import EndCredit from "./EndCredit";
 
 const Container = styled.div`
-
+  margin-top: auto;
 `;
 const Wrapper = styled.div`
   display: flex;
@@ -94,6 +95,7 @@ const Footer = () => {
             <MII src="https://i.ibb.co/4dvbZq9/MII.png" />
         </Right>
         </Wrapper>
+        <EndCredit/>
     </Container>
   );
 };

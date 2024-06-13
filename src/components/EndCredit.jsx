@@ -28,7 +28,6 @@ const EndCredit = () => {
   return (
     <Container>
         <Left>©2024 Copyright Simco Automotive Electricals. All Rights Reserved.</Left>
-        {/* <Center/> */}
         <Right>Designed and Developed by <Span>Easy Solution 360</Span></Right>
     </Container>
   )

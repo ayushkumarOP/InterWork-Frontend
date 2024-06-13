@@ -35,6 +35,8 @@ const Title = styled.h1`
   font-weight: 200;
 `;
 
+
+
 const SideNav = styled.h1`
   margin-left: 4rem;
   font-weight: 400;
@@ -112,6 +114,17 @@ const Button = styled.button`
   }
 `;
 
+const PriceText = styled.span`
+  font-weight: bold;
+  font-size: 30px;
+`;
+
+const VarText = styled.span`
+  font-weight: bold;
+  font-size: 25px;
+  margin-bottom: 15px;
+`;
+
 const QuantityButton = styled.button`
   background-color: transparent;
   border: none;
@@ -181,9 +194,14 @@ const ProductE = () => {
         <InfoContainer>
           <Title>SKU: {decodeURIComponent(product.category)}</Title>
           <Title>{decodeURIComponent(product.name)}</Title>
+         
           <Desc dangerouslySetInnerHTML={createMarkup(product.description)} />
-          <Price>₹ {product.price}</Price>
+          
+          <Price><PriceText>Price:</PriceText>   ₹ {product.price}</Price>
+
+          
           <FilterContainer>
+          <VarText>Variants:</VarText>
             {product.variants?.map((variant) => (
               <Filter key={variant.type}>
                 <FilterTitle>{variant.type}</FilterTitle>

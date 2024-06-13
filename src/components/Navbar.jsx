@@ -7,9 +7,14 @@ import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import { useSelector } from "react-redux";
 
 const Container = styled.div`
-  margin: 0 0 100px 0;
-  height: 0px;
-  ${mobile({ height: "50px" })}
+  /* margin: 0 0 100px 0; */
+  /* height: 0px; */
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 9999;
+  background-color: white;
+  ${mobile({ height: "50px" })};
 `;
 const Wrapper = styled.div`
   padding: 0px 20px;
@@ -66,6 +71,7 @@ const Button = styled.button`
   padding: 10.5px 39.5px 10.5px 39.5px;
   border: 2px solid #1881e9;
   border-radius: 3px;
+  cursor: pointer;
 `;
 const Divider = styled.hr`
   border: none;
@@ -92,7 +98,7 @@ const Navbar = () => {
         </Center>
 
         <Right>
-            <Button $primary>B2B Login</Button>
+            <Link to="/login"><Button $primary>B2B Login</Button></Link>
             <Link to="/cart">
             <MenuItem>
               <Badge badgeContent={quantity} color="primary">
